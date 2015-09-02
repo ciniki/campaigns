@@ -1,0 +1,40 @@
+#
+# Description
+# -----------
+# This table stores the customers attached to a campaign.
+#
+# Fields
+# ------
+# id:				The ID assigned to the campaign customer.
+# uuid:				The Universal Unique ID.
+# business_id:		The ID of the business the campaign customer is attached to.
+#
+# campaign_id:		The ID of the campaign the customer is attached to.
+#
+# customer_id:		The ID of the customer to email.
+#
+# start_date:		The UTC date and time the customer was attached to the campaign.
+#
+# status:			The current status of the campaign. 
+#
+#					10 - Active
+#					40 - Stopped emails for customer
+#					50 - Unsubscribed
+#
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
+#
+create table ciniki_campaign_customers (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	campaign_id int not null,
+	customer_id int not null,
+	start_date datetime not null,
+	status tinyint unsigned not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	unique index (uuid),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

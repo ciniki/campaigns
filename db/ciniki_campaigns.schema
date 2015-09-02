@@ -1,0 +1,38 @@
+#
+# Description
+# -----------
+# The ciniki_campaigns table stores the campaigns for a business.
+#
+# Fields
+# ------
+# id:				The ID assigned to the campaign.
+# uuid:				The Universal Unique ID.
+# business_id:		The ID of the business.
+#
+# name:				The name of the campaign
+#
+# tracking_uuid:	The Universal Unique ID used for tracking conversion and click throughs via campaign emails.
+#
+# status:			The current status of the campaign. 
+#
+#					0 - Entered, not yet active.
+#					10 - Active
+#					50 - Inactive, available for history
+#					60 - Deleted
+#
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
+#
+create table ciniki_campaigns (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	name varchar(250) not null,
+	tracking_uuid char(36) not null,
+	status tinyint unsigned not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	unique index (uuid),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
