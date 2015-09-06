@@ -13,12 +13,15 @@
 #
 # customer_id:		The ID of the customer to email.
 #
-# start_date:		The UTC date and time the customer was attached to the campaign.
+# utc_start_date:	The UTC date and time the customer was attached to the campaign.
+# start_date:		The date the user was started on the campaign, based in business timezone.
 #
 # status:			The current status of the campaign. 
 #
 #					10 - Active
-#					40 - Stopped emails for customer
+#					20 - Stopped emails for customer
+#					30 - Successful, customer joined/subscribed/etc, campaign worked
+#					40 - Completed, all emails for the campaign have been sent.
 #					50 - Unsubscribed
 #
 # date_added:       The UTC date and time the record was added.
@@ -30,7 +33,8 @@ create table ciniki_campaign_customers (
 	business_id int not null,
 	campaign_id int not null,
 	customer_id int not null,
-	start_date datetime not null,
+	utc_start_date datetime not null,
+	start_date date not null,
 	status tinyint unsigned not null,
 	date_added datetime not null,
 	last_updated datetime not null,

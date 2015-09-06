@@ -20,6 +20,15 @@
 #					50 - Inactive, available for history
 #					60 - Deleted
 #
+# flags:			Options for the campaign.
+#
+#					0x01 - Deliver at the time specified in the field delivery_time, defaults to using default time.
+#					0x02 - 
+#					0x04 - 
+#					0x08 - 
+#
+# delivery_time:	The time of day to send this email if specified as a flag.  Otherwise the delivery time in settings will be used.
+#
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last updated.
 #
@@ -30,6 +39,8 @@ create table ciniki_campaigns (
 	name varchar(250) not null,
 	tracking_uuid char(36) not null,
 	status tinyint unsigned not null,
+	flags tinyint unsigned not null,
+	delivery_time time not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),

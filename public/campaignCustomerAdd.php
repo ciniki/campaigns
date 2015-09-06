@@ -23,8 +23,6 @@ function ciniki_campaigns_campaignCustomerAdd(&$ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'campaign_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Campaign'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
-		'start_date'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Start Date'), 
-		'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -72,13 +70,13 @@ function ciniki_campaigns_campaignCustomerAdd(&$ciniki) {
 	//
 	// Add the campaign customer to the database
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.campaigns.customer', $args, 0x04);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'campaigns', 'private', 'customerAdd');
+	$rc = ciniki_campaigns_customerAdd($ciniki, $args['business_id'], $args['campaign_id'], $args['customer_id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.campaigns');
 		return $rc;
 	}
-	$campaign_id = $rc['id'];
+	$campaign_customer_id = $rc['id'];
 
 	//
 	// Commit the transaction

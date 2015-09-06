@@ -22,8 +22,10 @@ function ciniki_campaigns_campaignEmailUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'), 
-		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+		'subject'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Subject'), 
 		'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
+		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
+		'delivery_time'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Delivery Time'), 
 		'days_from_start'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Days From Start'), 
 		'subject'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Subject'), 
 		'html_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'HTML Content'), 

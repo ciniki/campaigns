@@ -22,8 +22,10 @@ function ciniki_campaigns_campaignUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'campaign_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Campaign'), 
-		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
-		'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
+		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+		'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
+		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
+		'delivery_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Delivery Time'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -28,6 +28,8 @@ function ciniki_campaigns_campaignAdd(&$ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
 		'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
+		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
+		'delivery_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Delivery Time'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

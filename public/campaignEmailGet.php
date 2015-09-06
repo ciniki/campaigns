@@ -66,22 +66,24 @@ function ciniki_campaigns_campaignEmailGet($ciniki) {
 	$maps = $rc['maps'];
 
 	if( $args['email_id'] == 0 ) {
-		$campaign = array('id'=>0,
-			'status'=>'10',
-			'days_from_start'=>'',
+		$email = array('id'=>0,
+			'status'=>'50',
+			'flags'=>'0',
+			'delivery_time'=>'',
+			'days_from_start'=>'0',
 			'subject'=>'',
 			'html_content'=>'',
 			'text_content'=>'',
 			);
 	} else {
-		$strsql = "SELECT ciniki_campaigns.id, "
-			. "ciniki_campaigns.status, "
-			. "ciniki_campaigns.status AS status_text "
-			. "ciniki_campaigns.days_from_start, "
-			. "ciniki_campaigns.subject, "
-			. "ciniki_campaigns.html_content, "
-			. "ciniki_campaigns.text_content "
-			. "FROM ciniki_campaigns ";
+		$strsql = "SELECT ciniki_campaign_emails.id, "
+			. "ciniki_campaign_emails.status, "
+			. "ciniki_campaign_emails.status AS status_text, "
+			. "ciniki_campaign_emails.days_from_start, "
+			. "ciniki_campaign_emails.subject, "
+			. "ciniki_campaign_emails.html_content, "
+			. "ciniki_campaign_emails.text_content "
+			. "FROM ciniki_campaign_emails "
 			. "WHERE ciniki_campaign_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_campaign_emails.id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
 			. "";

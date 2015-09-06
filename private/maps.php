@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_events_maps($ciniki) {
+function ciniki_campaigns_maps($ciniki) {
 	$maps = array();
 	$maps['campaign'] = array(
 		'status'=>array(
@@ -30,7 +30,9 @@ function ciniki_events_maps($ciniki) {
 		'status'=>array(
 			'0'=>'Unknown',
 			'10'=>'Active',
-			'40'=>'Stopped',
+			'20'=>'Stopped',
+			'30'=>'Successful',
+			'40'=>'Completed',
 			'50'=>'Unsubscribed',
 		));
 

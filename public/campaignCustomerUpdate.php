@@ -22,7 +22,6 @@ function ciniki_campaigns_campaignCustomerUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'campaign_customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>''), 
-		'start_date'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Start Date'), 
 		'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
