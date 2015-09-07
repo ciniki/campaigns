@@ -120,6 +120,7 @@ function ciniki_campaigns_customerAdd(&$ciniki, $business_id, $campaign_id, $cus
 	//
 	// Add the emails to the queue
 	//
+	$send_immediately = array();
 	foreach($campaign['emails'] as $email) {
 		//
 		// Setup the object args
@@ -173,12 +174,20 @@ function ciniki_campaigns_customerAdd(&$ciniki, $business_id, $campaign_id, $cus
 		$queue_id = $rc['id'];
 
 		//
-		// FIXME: Send any emails that are marked as day 0
+		// Send any emails that are marked as day 0
 		//
 		if( $email['days_from_start'] == '0' ) {
-//			$rc = ciniki_campaigns_sendMail($ciniki, $business_id, $queue_id);
-//			if( $rc['stat'] != 'ok' ) {
-//			}
+			$send_immediately[] = $queue_id;
+		}
+	}
+
+	//
+	// Check for emails to send immediately
+	//
+	foreach($send_immediately AS $queue_id) {
+		$rc = ciniki_campaigns_sendMail($ciniki, $business_id, $queue_id);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
 		}
 	}
 

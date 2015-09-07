@@ -18,7 +18,8 @@
 #
 #							10 - Queued
 #							20 - Sending
-#							30 - Failed
+#							40 - Failed
+#							50 - Sent
 #
 # date_added:       		The UTC date and time the record was added.
 # last_updated:     		The UTC date and time the record was last updated.
