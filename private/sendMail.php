@@ -17,7 +17,8 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 	//
 	// Load the email from the queue
 	//
-	$strsql = "SELECT ciniki_campaign_queue.campaign_id, "	
+	$strsql = "SELECT ciniki_campaign_queue.uuid, "
+		. "ciniki_campaign_queue.campaign_id, "	
 		. "ciniki_campaign_queue.campaign_customer_id, "
 		. "ciniki_campaign_queue.campaign_email_id, "
 		. "ciniki_campaign_queue.send_date, "
@@ -51,7 +52,7 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 		return $rc;
 	}
 	if( !isset($rc['email']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2534', 'msg'=>'Unable to find queue email'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2514', 'msg'=>'Unable to find queue email'));
 	}
 	$email = $rc['email'];
 
@@ -110,6 +111,7 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND status = 10 "
 		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.campaigns');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -118,6 +120,8 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 	//
 	// Insert into the ciniki_mail modules
 	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
 	foreach($customer['emails'] as $customer_email) {
 		$email_args = array(
 			'customer_id'=>$email['customer_id'],
@@ -147,7 +151,15 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 		// If this is being run via API it will trigger the sending of the email.
 		// If it is being run via cron, this will be ignored and picked up when it processes the mail queue
 		//
-		$ciniki['emailqueue'][] = array('email_id'=>$rc['id']);
+		$ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'business_id'=>$business_id);
+
+		//
+		// Successful add to mail, remove from campaign queue
+		//
+		$rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.campaigns.queue', $queue_id, $email['uuid'], 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2507', 'msg'=>'Unable to remove from queue', 'err'=>$rc['err']));
+		}
 	}
 
 	return array('stat'=>'ok');

@@ -93,6 +93,6 @@ function ciniki_campaigns_campaignCustomerAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'campaigns');
 
-	return array('stat'=>'ok', 'id'=>$campaign_id);
+	return array('stat'=>'ok', 'id'=>$campaign_customer_id);
 }
 ?>

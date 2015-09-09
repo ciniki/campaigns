@@ -55,14 +55,14 @@ function ciniki_campaigns_main() {
 				'status_text':{'label':'Status'},
 				'delivery_time':{'label':'Delivery Time'},
 				}},
-			'customer_stats':{'label':'Customers', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-				'addTxt':'Add Customer',
-				'addFn':'M.ciniki_campaigns_main.campaign.addCustomer();',
-				},
-			'emails':{'label':'Emails', 'type':'simplegrid', 'num_cols':3,
+			'emails':{'label':'Emails', 'aside':'yes', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Day', 'Status', 'Subject'],
 				'addTxt':'Add Email',
 				'addFn':'M.ciniki_campaigns_main.emailEdit(\'M.ciniki_campaigns_main.campaignShow();\',0,M.ciniki_campaigns_main.campaign.campaign_id);',
+				},
+			'customer_stats':{'label':'Customers', 'type':'simplegrid', 'num_cols':2,
+				'addTxt':'Add Customer',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_campaigns_main.campaignShow();\',\'mc\',{\'next\':\'M.ciniki_campaigns_main.campaignCustomerAdd\',\'customer_id\':0});',
 				},
 			'_buttons':{'label':'', 'buttons':{
 				'edit':{'label':'Edit', 'fn':'M.ciniki_campaigns_main.campaignEdit(\'M.ciniki_campaigns_main.campaignShow();\',M.ciniki_campaigns_main.campaign.campaign_id);'},
@@ -92,6 +92,7 @@ function ciniki_campaigns_main() {
 			if( s == 'emails' ) {
 				return 'M.ciniki_campaigns_main.emailEdit(\'M.ciniki_campaigns_main.campaignShow();\',\'' + d.email.id + '\');';
 			}
+			return '';
 		};
 		this.campaign.addClose('Back');
 
@@ -199,20 +200,21 @@ function ciniki_campaigns_main() {
 		});
 	};
 
-	this.campaignShow = function(cb, cid) {
+	this.campaignShow = function(cb, cid, customer_id) {
 		this.campaign.reset();
 		if( cid != null ) { this.campaign.campaign_id = cid; }
-		M.api.getJSONCb('ciniki.campaigns.campaignGet', {'business_id':M.curBusinessID, 
-			'campaign_id':this.campaign.campaign_id, 'stats':'yes', 'emails':'yes'}, function(rsp) {
-				if( rsp.stat != 'ok' ) {
-					M.api.err(rsp);
-					return false;
-				}
-				var p = M.ciniki_campaigns_main.campaign;
-				p.data = rsp.campaign;
-				p.refresh();
-				p.show(cb);
-			});
+		var args = {'business_id':M.curBusinessID, 'campaign_id':this.campaign.campaign_id, 'stats':'yes', 'emails':'yes'};
+		if( customer_id != null ) { args['add_customer_id'] = customer_id; }
+		M.api.getJSONCb('ciniki.campaigns.campaignGet', args, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			var p = M.ciniki_campaigns_main.campaign;
+			p.data = rsp.campaign;
+			p.refresh();
+			p.show(cb);
+		});
 	};
 
 	this.campaignEdit = function(cb, cid) {
@@ -286,7 +288,11 @@ function ciniki_campaigns_main() {
 					M.ciniki_campaigns_main.campaign.close();
 				});
 		}
-	}
+	};
+
+	this.campaignCustomerAdd = function(cid) {
+		this.campaignShow(null,null,cid);
+	};
 
 	this.emailEdit = function(cb, eid, cid) {
 		if( eid != null ) { this.email.email_id = eid; }

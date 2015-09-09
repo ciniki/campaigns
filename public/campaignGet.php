@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_campaigns_campaignGet($ciniki) {
+function ciniki_campaigns_campaignGet(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -24,6 +24,7 @@ function ciniki_campaigns_campaignGet($ciniki) {
         'campaign_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Campaign'), 
         'stats'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Statistics'), 
         'emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Emails'), 
+		'add_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -79,6 +80,18 @@ function ciniki_campaigns_campaignGet($ciniki) {
 		return $rc;
 	}
 	$maps = $rc['maps'];
+
+	//
+	// Check if the customer should be added first
+	//
+	if( isset($args['add_customer_id']) && $args['add_customer_id'] != '' && $args['campaign_id'] > 0 ) {
+		$ciniki['request']['args']['customer_id'] = $args['add_customer_id'];
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'campaigns', 'public', 'campaignCustomerAdd');
+		$rc = ciniki_campaigns_campaignCustomerAdd($ciniki);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	}
 
 	
 	if( $args['campaign_id'] == '0' ) {
@@ -155,7 +168,7 @@ function ciniki_campaigns_campaignGet($ciniki) {
 		if( isset($args['stats']) && $args['stats'] == 'yes' ) {
 			$strsql = "SELECT ciniki_campaign_customers.status, "		
 				. "ciniki_campaign_customers.status AS status_text, "
-				. "COUNT(ciniki_campaign_customers.customer_id) AS num_customer "
+				. "COUNT(ciniki_campaign_customers.customer_id) AS num_customers "
 				. "FROM ciniki_campaign_customers "
 				. "WHERE ciniki_campaign_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "AND ciniki_campaign_customers.campaign_id = '" . ciniki_core_dbQuote($ciniki, $args['campaign_id']) . "' "
@@ -164,7 +177,9 @@ function ciniki_campaigns_campaignGet($ciniki) {
 				. "";
 			$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.campaigns', array(
 				array('container'=>'customers', 'fname'=>'status', 'name'=>'stat',
-					'fields'=>array('status', 'status_text', 'num_customers')),
+					'fields'=>array('status', 'status_text', 'num_customers'),
+					'maps'=>array('status_text'=>$maps['customer']['status']),
+					),
 				));
 			if( $rc['stat'] != 'ok' ) {
 				return $rc;
