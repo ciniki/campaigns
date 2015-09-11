@@ -85,7 +85,7 @@ function ciniki_campaigns_customerAdd(&$ciniki, $business_id, $campaign_id, $cus
 	// Check to make sure customer exists
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerStatus');
-	$rc = ciniki_customers_hooks_customerStatus($ciniki, $business_id, $customer_id);
+	$rc = ciniki_customers_hooks_customerStatus($ciniki, $business_id, array('customer_id'=>$customer_id));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2527', 'msg'=>'Customer does not exist'));
 	}
