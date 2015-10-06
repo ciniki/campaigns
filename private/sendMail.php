@@ -101,7 +101,11 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 	// Parse and do substitutions on html and text content
 	//
 
-
+	
+	//
+	// Setup the unsubscribe link
+	//
+	$unsubscribe_url = '';
 
 	//
 	// Update status of queue item to lock it
@@ -116,6 +120,9 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	if( $rc['num_affected_rows'] < 1 ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2590', 'msg'=>'Unable to lock the queued item'));
+	}
 
 	//
 	// Insert into the ciniki_mail modules
@@ -128,8 +135,11 @@ function ciniki_campaigns_sendMail(&$ciniki, $business_id, $queue_id) {
 			'customer_name'=>$customer['display_name'],
 			'customer_email'=>$customer_email['address'],
 			'subject'=>$email['subject'],
-			'html_content'=>$email['html_content'],
+			'title'=>$email['subject'],
+			'html_content'=>$email['html_content'], 
 			'text_content'=>$email['text_content'],
+			'unsubscribe_url'=>$unsubscribe_url,
+			'unsubscribe_text'=>'Unsubscribe',
 			'object'=>'ciniki.campaigns.email',
 			'object_id'=>$email['campaign_email_id'],
 			'parent_object'=>'ciniki.campaigns.campaign',
