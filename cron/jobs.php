@@ -12,8 +12,9 @@
 // Returns
 // -------
 //
-function ciniki_campaigns_cron_checkQueue($ciniki) {
-	print("CRON: Checking campaigns queue for mail to be sent\n");
+function ciniki_campaigns_cron_jobs($ciniki) {
+	ciniki_cron_logMsg($ciniki, 0, array('code'=>'0', 'msg'=>'Check for campaign jobs', 'severity'=>'5'));
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
@@ -28,7 +29,7 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 		. "";
 	$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.mail', 'businesses', 'business_id');
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2623', 'msg'=>'Unable to get list of businesses with campaigns', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['businesses']) || count($rc['businesses']) == 0 ) {
 		$businesses = array();
@@ -43,18 +44,7 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'sendMail');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	foreach($businesses as $business_id) {
-		print("CRON: Sending campaign mail for $business_id\n");
-//		$rc = ciniki_mail_getSettings($ciniki, $business_id);
-//		if( $rc['stat'] != 'ok' ) {
-//			error_log("CRON-ERR: Unable to load business mail settings for $business_id (" . serialize($rc) . ")");
-//			continue;
-//		}
-//		$settings = $rc['settings'];	
-
-//		$limit = 1; 	// Default to really slow sending, 1 every 5 minutes
-//		if( isset($settings['smtp-5min-limit']) && is_numeric($settings['smtp-5min-limit']) && $settings['smtp-5min-limit'] > 0 ) {
-//			$limit = intval($settings['smtp-5min-limit']);
-//		}
+		ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'0', 'msg'=>'Sending campaign mail', 'severity'=>'10'));
 
 		$strsql = "SELECT ciniki_campaign_queue.id "
 			. "FROM ciniki_campaign_queue "
@@ -64,7 +54,8 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 
 		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.campaigns', 'emails', 'id');
 		if( $rc['stat'] != 'ok' ) {
-			error_log("CRON-ERR: Unable to load mail list for $business_id (" . serialize($rc) . ")");
+			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2624', 'msg'=>'Unable to load mail list', 
+				'severity'=>50, 'err'=>$rc['err']));
 			continue;
 		}
 		$emails = $rc['emails'];
@@ -78,7 +69,9 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 			$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.campaigns');
 			if( $rc['stat'] != 'ok' ) { 
-				return $rc;
+				ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2626', 'msg'=>'Unable to setup transaction.', 
+					'severity'=>50, 'err'=>$rc['err']));
+				continue;
 			}   
 
 			//
@@ -86,7 +79,8 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 			//
 			$rc = ciniki_campaigns_sendMail($ciniki, $business_id, $queue_id);
 			if( $rc['stat'] != 'ok' ) {
-				error_log("CRON-ERR: Unable to send campaign mail for $business_id (" . serialize($rc) . ")");
+				ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2625', 'msg'=>'Error sending campaign mail', 
+					'severity'=>50, 'err'=>$rc['err']));
 				continue;
 			}
 
@@ -95,7 +89,8 @@ function ciniki_campaigns_cron_checkQueue($ciniki) {
 			//
 			$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.campaigns');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2627', 'msg'=>'Unable to close transaction.', 
+					'severity'=>50, 'err'=>$rc['err']));
 			}
 		}
 	}
