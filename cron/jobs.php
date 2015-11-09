@@ -29,7 +29,7 @@ function ciniki_campaigns_cron_jobs($ciniki) {
 		. "";
 	$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.mail', 'businesses', 'business_id');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2623', 'msg'=>'Unable to get list of businesses with campaigns', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2583', 'msg'=>'Unable to get list of businesses with campaigns', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['businesses']) || count($rc['businesses']) == 0 ) {
 		$businesses = array();
