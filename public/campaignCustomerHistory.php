@@ -41,7 +41,7 @@ function ciniki_campaigns_campaignCustomerHistory($ciniki) {
 	// Check access to business_id as owner, or sys admin
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'campaigns', 'private', 'checkAccess');
-	$rc = ciniki_campaigns_checkAccess($ciniki, $args['business_id'], 'ciniki.campaigns.campaignHistory');
+	$rc = ciniki_campaigns_checkAccess($ciniki, $args['business_id'], 'ciniki.campaigns.campaignCustomerHistory');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

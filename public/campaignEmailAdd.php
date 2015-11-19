@@ -45,7 +45,7 @@ function ciniki_campaigns_campaignEmailAdd(&$ciniki) {
 	// Check access to business_id as owner
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'campaigns', 'private', 'checkAccess');
-	$rc = ciniki_campaigns_checkAccess($ciniki, $args['business_id'], 'ciniki.campaigns.campaignAdd');
+	$rc = ciniki_campaigns_checkAccess($ciniki, $args['business_id'], 'ciniki.campaigns.campaignEmailAdd');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
